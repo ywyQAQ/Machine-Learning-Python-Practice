@@ -20,6 +20,7 @@ def main():
     filename = 'iris.data.csv'
     names = ['separ-length', 'separ-width', 'petal-length', 'petal-width', 'class']
     dataset = read_csv(filename, names=names)
+
     # 分离数据集
     array = dataset.values
     X = array[:, 0:4 ]
@@ -27,29 +28,13 @@ def main():
     validation_size = 0.2
     seed = 7
     X_train, X_validation, Y_train, Y_validation = train_test_split(X, Y, test_size=validation_size, random_state=seed)
-    #   算法审查
-    models = {}
-    models['LR'] = LogisticRegression(max_iter=1000)
-    models['LDA'] = LinearDiscriminantAnalysis()
-    models['KNN'] = KNeighborsClassifier()
-    models['CART'] = DecisionTreeClassifier()
-    models['NB'] = GaussianNB()
-    models['SVM'] = SVC()
-    #   评估算法
-    results = []
-    for key in models:
-        kfold = KFold(n_splits=10, random_state=None)
-        cv_results = cross_val_score(models[key], X_train, Y_train,cv=kfold, scoring='accuracy')
-        results.append(cv_results)
-
-    #   箱线图比较算法
-    fig = pyplot.figure()
-    fig.suptitle('Algorithm Comparison')
-    ax = fig.add_subplot(111)
-    pyplot.boxplot(results)
-    ax.set_xticklabels(models.keys())
-    pyplot.show()
-
+    # 使用评估数据集评估算法
+    svm = SVC()
+    svm.fit(X=X_train, y=Y_train)
+    predictions = svm.predict(X_validation)
+    print(accuracy_score(Y_validation, predictions))
+    print(confusion_matrix(Y_validation, predictions))
+    print(classification_report(Y_validation, predictions))
 
 if __name__ == '__main__':
     main()
